@@ -1,0 +1,178 @@
+<template>
+	<div class="condition container">
+		<my-modal title='我的模态框' :visible='true'>
+		</my-modal>
+		<my-info msg='你好'></my-info>
+		<!-- 条件 -->
+		<div :class="dyClass" v-show='false'>
+			{{age}}
+			<div v-if='age<18'>未成年人</div>
+			<div v-else-if='age>=18 && age<30'>青成年人</div>
+			<div v-else>老年人</div>
+		</div>
+		<!-- 列表 -->
+		<table class="table">
+			<thead>
+				<tr>
+					<th>编号</th>
+					<th>姓名</th>
+					<th>年龄</th>
+					<th>性别</th>
+					<th>操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr v-for='(user,index) in users'>
+					<td><input type="checkbox" v-model='ids' :value='user.id'></td>
+					<td>{{user.name}}</td>
+					<td>{{user.age}}</td>
+					<td>{{user.gender}}</td>
+					<td>
+						<a href="javascript:void(0)" @click='deleteUser(user)'>删除</a>
+						<a href="javascript:void(0)" @click='updateUser(user)'>修改</a>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<button class="btn btn-primary btn-sm" @click='batchDeleteUser'>批量删除</button> 
+		<button class="btn btn-primary btn-sm" @click="toAddUser">添加</button>
+
+		<!-- <ul>
+			<li v-for='(val,key,index) in users[0]' :key='index'>{{key+":"+val}} , {{index}}</li>
+		</ul> -->
+		<!-- 模态框 -->
+		<div id="userModal" class="modal fade" tabindex="-1" role="dialog">
+		  <div class="modal-dialog" role="document">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		        <h4 class="modal-title">{{title}}</h4>
+		      </div>
+		      <div class="modal-body">
+		      	{{user}}
+		        <form>
+		        	<div class="form-group">
+						    <label for="name">姓名</label>
+						    <input v-model="user.name" type="text" class="form-control" id="name" placeholder="username">
+						  </div>
+						  <div class="form-group">
+						    <label for="age">年龄</label>
+						    <input v-model="user.age" type="text" class="form-control" id="age" placeholder="age">
+						  </div>
+						  <div class="form-group">
+						   	<label>性别</label>
+						   	<label>
+						   		<input type="radio" value="男" v-model="user.gender">男
+						   	</label>
+						   		<label>
+						   		<input type="radio" value="女" v-model="user.gender">女
+						   	</label>
+						  </div>
+		        </form>
+
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Close</button>
+		        <button @click="saveOrUpdateUser" type="button" class="btn btn-primary btn-sm">Save changes</button>
+		      </div>
+		    </div><!-- /.modal-content -->
+		  </div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
+		<!-- 模态框结束 -->
+	</div>
+</template>
+<script>
+	export default {
+		data(){
+			return {
+				title:'',
+				age:0,
+				ids:[],
+				user:{
+
+				},
+				users:[{
+					id:1,
+					name:'terry',
+					age:12,
+					gender:'男'
+				},{
+					id:2,
+					name:'larry',
+					age:13,
+					gender:'男'
+				},{
+					id:3,
+					name:'tom',
+					age:12,
+					gender:'男'
+				}]
+			}
+		},
+		methods:{
+			saveOrUpdateUser(){
+				alert(JSON.stringify(this.user));
+			},
+			toAddUser(){
+				this.title = '添加用户';
+				this.user = {};
+				$("#userModal").modal("show");
+			},
+			batchDeleteUser(){
+				alert(this.ids);
+			},
+			deleteUser(user){
+				_.remove(this.users,(item)=>{
+					if(item.id == user.id){
+						return true;
+					}
+				});
+				this.users.push({});
+				this.users.pop();
+			},
+			updateUser(user){
+				this.user = user;
+				this.title = "修改用户"
+				$('#userModal').modal('show');
+			}
+		},
+		computed:{
+			dyClass(){
+				let result = '';
+				if(this.age<18){
+					result = 'young'
+				} else if(this.age>=18 && this.age<30){
+					result = 'strong';
+				} else {
+					result = 'old'
+				}
+				return result;
+			}
+		},
+		mounted(){
+
+			let a = setInterval(()=>{
+				this.age++;
+
+				if(this.age>=100){
+					clearInterval(a);
+				}
+			},100);
+
+		}
+	}
+</script>
+<style>
+	.young {
+		font-size: 10px;
+	}
+	.strong {
+		font-size: 18px;
+	}
+	.old {
+		font-size: 28px;
+	}
+</style>
+
+
+
